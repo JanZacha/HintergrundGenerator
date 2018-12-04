@@ -7,8 +7,8 @@
 import unittest
 from click.testing import CliRunner
 
-from hintergrundgenerator import hintergrundgenerator
-from hintergrundgenerator import cli
+from src import hintergrundgenerator
+from src import cli
 
 
 class TestHintergrundgenerator(unittest.TestCase):
@@ -28,7 +28,8 @@ class TestHintergrundgenerator(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(cli.main)
         assert result.exit_code == 0
-        assert 'hintergrundgenerator.cli.main' in result.output
+        assert 'Save' in result.output
+        assert 'output.svg' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
         assert help_result.exit_code == 0
         assert '--help  Show this message and exit.' in help_result.output

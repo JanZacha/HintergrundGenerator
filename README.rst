@@ -2,19 +2,6 @@
 HintergrundGenerator
 ====================
 
-
-.. image:: https://img.shields.io/pypi/v/hintergrundgenerator.svg
-        :target: https://pypi.python.org/pypi/hintergrundgenerator
-
-.. image:: https://img.shields.io/travis/JanZacha/hintergrundgenerator.svg
-        :target: https://travis-ci.org/JanZacha/hintergrundgenerator
-
-.. image:: https://readthedocs.org/projects/hintergrundgenerator/badge/?version=latest
-        :target: https://hintergrundgenerator.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-
-
 A simple Generator for Background Images written in Python
 
 

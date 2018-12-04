@@ -7,7 +7,7 @@ from random import random, gauss
 import click
 import svgwrite
 
-from hintergrundgenerator.hintergrundgenerator import get_coords_random, map_opacity_to_layer
+from src.hintergrundgenerator import get_coords_random, map_opacity_to_layer
 
 
 @click.command()
@@ -48,6 +48,7 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
         groups[group_index].add(dwg.circle((x, y), size, fill='white', fill_opacity=opacity))
 
     dwg.save(pretty=True)
+    click.echo("Saved output to file %s" % out)
     # sad. cairo ignores the blurring effect completely!
     # cairosvg.svg2png(bytestring=dwg.tostring(), write_to='random_circles.png')
 
