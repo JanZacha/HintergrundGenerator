@@ -1,18 +1,15 @@
-====================
-HintergrundGenerator
-====================
+# HintergrundGenerator
 
 A simple Generator for Background Images written in Python
 
-
 * Free software: GNU General Public License v3
-* Documentation: https://hintergrundgenerator.readthedocs.io.
 
+![alt text](src/sample.png)
 
-Features
---------
+Feature(s)
+----------
 
-* TODO
+* Creates images like the sample above.
 
 Credits
 -------
