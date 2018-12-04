@@ -6,8 +6,17 @@ from random import random, gauss
 
 import click
 import svgwrite
+from svgwrite import Drawing
 
 from src.hintergrundgenerator import get_coords_random, map_opacity_to_layer
+
+
+def create_blur_filter(i, dwg: Drawing):
+    """Create simple Filters to blur"""
+    blur_filter = dwg.filter()
+    blur_filter.feGaussianBlur(in_='SourceGraphic', stdDeviation=i * .9)
+
+    return blur_filter
 
 
 @click.command()
@@ -23,13 +32,7 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
     dwg = svgwrite.Drawing(out, (image_w, image_h), debug=True)
     dwg.add(dwg.rect(insert=(0, 0), size=('100%', '100%'), fill=bg_color))
 
-    # create simple filters to blur
-    def create_blur_filter(i):
-        blur_filter = dwg.filter()
-        blur_filter.feGaussianBlur(in_='SourceGraphic', stdDeviation=i * .9)
-        return blur_filter
-
-    filters = [create_blur_filter(i) for i in range(layers)]
+    filters = [create_blur_filter(i, dwg) for i in range(layers)]
 
     for f in filters:
         dwg.defs.add(f)
@@ -37,7 +40,7 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
     groups = [dwg.add(dwg.g(filter=f.get_funciri())) for f in filters]
 
     # This is a hack to ensure the groups (aka layers) have the same size as the image
-    # if we do not do this, we get artifacts when the blurred circles extend the group dimensions
+    # if we do not do this, we get rendering artifacts when the blurred circles extend the group dimensions
     for g in groups:
         g.add(dwg.rect(insert=(0, 0), size=('100%', '100%'), fill="#ff0000", fill_opacity=0))
 
@@ -48,8 +51,9 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
         groups[group_index].add(dwg.circle((x, y), size, fill='white', fill_opacity=opacity))
 
     dwg.save(pretty=True)
-    click.echo("Saved output to file %s" % out)
+    click.echo("Saved generated background image to file %s" % out)
     # sad. cairo ignores the blurring effect completely!
+    # for now, converting to png has to be done externally.
     # cairosvg.svg2png(bytestring=dwg.tostring(), write_to='random_circles.png')
 
 
