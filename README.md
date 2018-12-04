@@ -2,9 +2,9 @@
 
 A simple Generator for Background Images written in Python
 
-* Free software: GNU General Public License v3
+![Sample output](src/sample.png)
 
-![alt text](src/sample.png)
+* Free software: GNU General Public License v3
 
 Feature(s)
 ----------
