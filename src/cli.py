@@ -8,15 +8,39 @@ import click
 import svgwrite
 from svgwrite import Drawing
 
+from circle_intersections import get_linear_interpolation_of_circle, subdivide
+from geomerics import disturb_points_by_neighbors_normals
 from src.hintergrundgenerator import get_coords_random, map_opacity_to_layer
 
 
-def create_blur_filter(i, dwg: Drawing):
+def create_blur_filter(dwg: Drawing, i):
     """Create simple Filters to blur"""
     blur_filter = dwg.filter()
     blur_filter.feGaussianBlur(in_='SourceGraphic', stdDeviation=i * .9)
 
     return blur_filter
+
+
+def create_circle(dwg: Drawing, x, y, radius, opacity):
+    return dwg.circle((x, y), radius, fill='white', fill_opacity=opacity)
+
+
+def create_fractal_circle(dwg: Drawing, x, y, radius, opacity):
+    c = get_linear_interpolation_of_circle(x, y, radius, n=10)
+
+    n_steps = 6
+    for _ in range(n_steps):
+        c = subdivide(c)
+
+    return dwg.add(dwg.polygon(c, fill='white', fill_opacity=opacity))
+
+
+def create_disturbed_circle(dwg: Drawing, x, y, radius, opacity):
+    c = get_linear_interpolation_of_circle(x, y, radius, n=10)
+
+    c = disturb_points_by_neighbors_normals(c)
+
+    return dwg.add(dwg.polygon(c, fill='white', fill_opacity=opacity))
 
 
 @click.command()
@@ -32,7 +56,7 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
     dwg = svgwrite.Drawing(out, (image_w, image_h), debug=True)
     dwg.add(dwg.rect(insert=(0, 0), size=('100%', '100%'), fill=bg_color))
 
-    filters = [create_blur_filter(i, dwg) for i in range(layers)]
+    filters = [create_blur_filter(dwg, i) for i in range(layers)]
 
     for f in filters:
         dwg.defs.add(f)
@@ -46,9 +70,9 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
 
     for x, y in get_coords_random(image_w):
         opacity = random()
-        size = gauss(max_size, 30)
+        radius = gauss(max_size, 30)
         group_index = map_opacity_to_layer(layers, opacity)
-        groups[group_index].add(dwg.circle((x, y), size, fill='white', fill_opacity=opacity))
+        groups[group_index].add(create_disturbed_circle(dwg, x, y, radius, opacity))
 
     dwg.save(pretty=True)
     click.echo("Saved generated background image to file %s" % out)
