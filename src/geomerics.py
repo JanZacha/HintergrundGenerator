@@ -2,20 +2,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-
-def get_neighbors(items):
-    """
-    Given an array of 2d points, return the array containing the pro and preceding element for every point.
-
-    >>> get_neighbors([1, 2, 3])
-    array([[3, 2],
-           [1, 3],
-           [2, 1]])
-    """
-    items = np.asarray(items)
-    a = np.vstack((items[-1][None], items[:-1]))
-    b = np.vstack((items[1:], items[0][None]))
-    return np.stack((a, b), 1)
+from array_tools import get_neighbors, merge
 
 
 def calc_normals_by_neighbors(points):
@@ -29,21 +16,34 @@ def calc_normals_by_neighbors(points):
     return ns / np.linalg.norm(ns, axis=1)[None].T
 
 
-def disturb_points_by_neighbors_normals(points):
-    ns = calc_normals_by_neighbors(points)
+def calc_normals_by_neighbors_with_norms_by_neighs(points):
+    neighs = get_neighbors(points)
+    vs = np.array([neigh[1] - neigh[0] for neigh in neighs])
+    ns = np.array([(-v[1], v[0]) for v in vs])
 
-    d = ns * (np.random.random_sample(len(points)) * 30)[None].T
-    return points + d
+    return ns, np.linalg.norm(ns, axis=1)[None].T
+
+
+def disturb_points_by_neighbors_normals(points, scale=50):
+    ns, ns_norms = calc_normals_by_neighbors_with_norms_by_neighs(points)
+    ns /= ns_norms
+    d = ns * (np.random.random_sample(len(points)) - .5)[None].T
+    return points + d * scale
+
+
+def subdivide(points):
+    points2 = np.vstack((points[1:], points[0]))
+    vs = (points + points2) / 2
+
+    return merge(points, vs)
+
+
+def interpolate(points0, points1, steps: int):
+    assert points0.shape == points1.shape
+
+    fs = np.linspace(0, 1, steps)
+    return points0 + ((points1 - points0) * fs[:, np.newaxis, np.newaxis])
 
 
 if __name__ == "__main__":
-    i = np.array([
-        [0,0],
-        [1,0],
-        [1,1],
-        [0,1]
-    ], dtype=float)
-
-    r = calc_normals_by_neighbors(i)
-    print(repr(r))
-
+    pass

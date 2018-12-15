@@ -8,7 +8,7 @@ import click
 import svgwrite
 from svgwrite import Drawing
 
-from circle_intersections import get_linear_interpolation_of_circle
+from circle_intersections import get_linear_interpolation_of_circle, subdivide_and_distort
 from geomerics import disturb_points_by_neighbors_normals, subdivide
 from src.hintergrundgenerator import get_coords_random, map_opacity_to_layer
 
@@ -30,15 +30,25 @@ def create_fractal_circle(dwg: Drawing, x, y, radius, opacity):
 
     n_steps = 6
     for _ in range(n_steps):
-        c = subdivide(c)
+        c = subdivide_and_distort(c)
 
     return dwg.add(dwg.polygon(c, fill='white', fill_opacity=opacity))
 
 
 def create_disturbed_circle(dwg: Drawing, x, y, radius, opacity):
-    c = get_linear_interpolation_of_circle(x, y, radius, n=10)
+    c = get_linear_interpolation_of_circle(x, y, radius, n=4)
+    c = disturb_points_by_neighbors_normals(c)
+    return dwg.add(dwg.polygon(c, fill='white', fill_opacity=opacity))
 
-    c = disturb_points_by_neighbors_normals(c, scale=10)
+
+def create_disturbed_circle2(dwg: Drawing, x, y, radius, opacity):
+    c = get_linear_interpolation_of_circle(x, y, radius, 100)
+
+    n_steps = 3
+
+    for i in range(n_steps):
+        c = disturb_points_by_neighbors_normals(c, 5)
+        c = subdivide(c)
 
     return dwg.add(dwg.polygon(c, fill='white', fill_opacity=opacity))
 
@@ -70,9 +80,9 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
 
     for x, y in get_coords_random(image_w):
         opacity = random()
-        radius = gauss(max_size, 30)
+        radius = gauss(max_size, 40)
         group_index = map_opacity_to_layer(layers, opacity)
-        groups[group_index].add(create_disturbed_circle(dwg, x, y, radius, opacity))
+        groups[group_index].add(create_disturbed_circle2(dwg, x, y, radius, opacity))
 
     dwg.save(pretty=True)
     click.echo("Saved generated background image to file %s" % out)
@@ -82,4 +92,4 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main())  # pragma: no cover

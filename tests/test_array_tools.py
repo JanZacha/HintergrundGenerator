@@ -3,26 +3,7 @@
 import numpy as np
 import pytest
 
-from geomerics import calc_normals_by_neighbors, get_neighbors
-
-
-def test_calc_normals_by_neighbors():
-    rectangle = np.array([
-        [0, 0],
-        [1, 0],
-        [1, 1],
-        [0, 1]
-    ], dtype=float)
-
-    expected = np.array([
-        [-1, -1],
-        [+1, -1],
-        [+1, +1],
-        [-1, +1]
-    ], dtype=float) / np.math.sqrt(2)
-
-    result = calc_normals_by_neighbors(rectangle)
-    np.testing.assert_allclose(result, expected)
+from array_tools import get_neighbors, merge
 
 
 @pytest.mark.skip(reason="sad. the onedimensonal version fails.")
@@ -52,4 +33,26 @@ def test_get_neighbors2():
         [[1, 0], [0, 0]]
     ], dtype=float)
 
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_merge():
+    array1 = np.array([1, 2, 3])
+    array2 = np.array([-1, -2, -3])
+
+    expected = np.array([
+        1, -1, 2, -2, 3, -3
+    ])
+
+    result = merge(array1, array2)
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_merge2():
+    array1 = np.array([[1, 2], [3, 4], [5, 6]])
+    array2 = np.array([[-1, -2], [-3, -4], [-5, -6]])
+
+    expected = np.array([[1, 2], [-1, -2], [3, 4], [-3, -4], [5, 6], [-5, -6]])
+
+    result = merge(array1, array2)
     np.testing.assert_array_equal(result, expected)
