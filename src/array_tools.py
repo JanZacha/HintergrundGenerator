@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def get_neighbors(items):
+def get_neighbors(items, closed=True):
     """
     Given an array of 2d points, return the array containing the preceding and subsequent element for every point.
 
@@ -16,11 +16,22 @@ def get_neighbors(items):
     <BLANKLINE>
            [[ 2, -2],
             [ 1, -1]]])
+
+
+    >>> get_neighbors([[1, -1], [2, -2], [3, -3]], closed=False)
+    array([[[ 1, -1],
+            [ 3, -3]]])
+
     """
     items = np.asarray(items)
     a = np.vstack((items[-1][None], items[:-1]))
     b = np.vstack((items[1:], items[0][None]))
-    return np.stack((a, b), 1)
+
+    ret = np.stack((a, b), 1)
+    if closed:
+        return ret
+    else:
+        return ret[1:-1]
 
 
 def merge(array1, array2):
