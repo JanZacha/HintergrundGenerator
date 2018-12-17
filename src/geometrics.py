@@ -47,3 +47,11 @@ def interpolate(points0, points1, steps: int):
 
 if __name__ == "__main__":
     pass
+
+
+def calc_neighbors_tangent(points):
+    """
+    """
+    neighs = get_neighbors(points, False)
+    vs = np.array([neigh[1] - neigh[0] for neigh in neighs])
+    return vs

@@ -10,39 +10,11 @@ import numpy as np
 import svgwrite
 
 from array_tools import get_neighbors
-
-
-def calc_neighbors_tangent(points):
-    """
-    """
-    neighs = get_neighbors(points, False)
-    vs = np.array([neigh[1] - neigh[0] for neigh in neighs])
-    return vs
+from bezier import get_bezier_control_points
 
 
 def get_random_points(n=10):
     return [(50 + x * 25, 100 + np.random.random() * 150) for x in range(n)]
-
-
-def get_bezier_control_points(points, scale=.25):
-    """
-    returns a list of bezier control points as needed for SVG's c-style beziers.
-
-    """
-    tangents = calc_neighbors_tangent(points)
-
-    result = [points[0]]
-
-    for p, t in zip(points[1:-1], tangents):
-        v = np.asarray(t) * scale
-        result.append(p - v)
-        result.append(p)
-        result.append(p + v)
-
-    result.append(points[-1])
-    result.append(points[-1])
-
-    return result
 
 
 @click.command()
@@ -79,10 +51,6 @@ def main(out, image_w, image_h, bg_color):
 
         dwg.add(dwg.line(p, cp2, stroke="lightblue", stroke_width=1))
         dwg.add(dwg.circle(cp2, 1.5, stroke="lightblue", fill="lightblue"))
-
-
-
-
 
     for p in points:
         dwg.add(dwg.circle(p, 3, fill="white"))

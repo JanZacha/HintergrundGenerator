@@ -9,7 +9,7 @@ import svgwrite
 from svgwrite import Drawing
 
 from circle_intersections import get_linear_interpolation_of_circle, subdivide_and_distort
-from geomerics import disturb_points_by_neighbors_normals, subdivide
+from geometrics import disturb_points_by_neighbors_normals, subdivide
 from src.hintergrundgenerator import get_coords_random, map_opacity_to_layer
 
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-from geomerics import subdivide, calc_normals_by_neighbors, interpolate
+from geometrics import subdivide, calc_normals_by_neighbors, interpolate
 
 
 def test_subdivide():
