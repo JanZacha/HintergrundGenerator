@@ -14,9 +14,9 @@ from src.hintergrundgenerator import get_coords_random, map_opacity_to_layer
 @click.option('--out', default='output.svg', help='Output image name')
 @click.option('--layers', default=10, help='Number of layers.')
 @click.option('--max-size', default=10)
-@click.option('--image-w', default=800, help='Width of the output image in pixels')
-@click.option('--image-h', default=600, help='Height of the output image in pixels')
-@click.option('--bg-color', default='#0563a5', help='Background color')
+@click.option('--image-w', default=2560, help='Width of the output image in pixels')
+@click.option('--image-h', default=1440, help='Height of the output image in pixels')
+@click.option('--bg-color', default='#2cc700', help='Background color')
 def main(out, layers, max_size, image_w, image_h, bg_color):
     """Console script for hintergrundgenerator."""
 
@@ -26,7 +26,7 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
     # create simple filters to blur
     def create_blur_filter(i):
         blur_filter = dwg.filter()
-        blur_filter.feGaussianBlur(in_='SourceGraphic', stdDeviation=i * .9)
+        blur_filter.feGaussianBlur(in_='SourceGraphic', stdDeviation=i * .9*4.3)
         return blur_filter
 
     filters = [create_blur_filter(i) for i in range(layers)]
@@ -41,9 +41,9 @@ def main(out, layers, max_size, image_w, image_h, bg_color):
     for g in groups:
         g.add(dwg.rect(insert=(0, 0), size=('100%', '100%'), fill="#ff0000", fill_opacity=0))
 
-    for x, y in get_coords_random(image_w):
+    for x, y in get_coords_random(image_w, image_h):
         opacity = random()
-        size = gauss(max_size, 30)
+        size = gauss(max_size, 30*4.3)
         group_index = map_opacity_to_layer(layers, opacity)
         groups[group_index].add(dwg.circle((x, y), size, fill='white', fill_opacity=opacity))
 
